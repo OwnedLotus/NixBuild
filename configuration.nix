@@ -14,7 +14,7 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
-  networking.hostName = "nixos"; # Define your hostname.
+  networking.hostName = "JonahsDesktop"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
   # Configure network proxy if necessary
@@ -43,23 +43,26 @@
   };
 
   # Enable the X11 windowing system.
+  # You can disable this if you're only using the Wayland session.
   services.xserver.enable = true;
 
-  # Enable the GNOME Desktop Environment.
-  services.xserver.displayManager.gdm.enable = true;
-  services.xserver.desktopManager.gnome.enable = true;
+  # Enable the KDE Plasma Desktop Environment.
+  services.displayManager.sddm.enable = true;
+  services.desktopManager.plasma6.enable = true;
 
   # Configure keymap in X11
-  services.xserver = {
+  services.xserver.xkb = {
     layout = "us";
-    xkbVariant = "";
+    variant = "";
   };
 
   # Enable CUPS to print documents.
   services.printing.enable = true;
 
+  programs.hyprland.enable = true;
+  environment.sessionVariables.NIXOS_OZONE_WL = "1";
+
   # Enable sound with pipewire.
-  sound.enable = true;
   hardware.pulseaudio.enable = false;
   security.rtkit.enable = true;
   services.pipewire = {
@@ -78,89 +81,72 @@
   # Enable touchpad support (enabled default in most desktopManager).
   # services.xserver.libinput.enable = true;
 
+  services.flatpak.enable = true;
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.jonahr = {
     isNormalUser = true;
     description = "Jonah Ringdahl";
     extraGroups = [ "networkmanager" "wheel" ];
+    # programs.fish.enable = true;
     packages = with pkgs; [
-      firefox
+      kdePackages.kate
       thunderbird
-      
+      neovim
+      onlyoffice-desktopeditors
+      ldtk
+      tiled
+      helix
+      zed-editor
     ];
   };
-
-  # Enable automatic login for the user.
-  services.xserver.displayManager.autoLogin.enable = true;
-  services.xserver.displayManager.autoLogin.user = "jonahr";
-
-  # Workaround for GNOME autologin: https://github.com/NixOS/nixpkgs/issues/103746#issuecomment-945091229
-  systemd.services."getty@tty1".enable = false;
-  systemd.services."autovt@tty1".enable = false;
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
 
-  services.flatpak.enable = true;
-
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
-    neovim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
-    wget
-    gnome.gnome-terminal
-    catch2
-    cmake
-    gnumake
-    ninja
-    xorg.libX11
+    dotnet-sdk_9
     rustup
-    dotnet-sdk_8
-    jetbrains.rider
-    jetbrains.clion
-    libgcc
-    gdb
-    steam
-    discord
-    github-desktop
-    ollama
-    rocm-opencl-runtime
-    git
+    flatpak
+    cmake
+    wget
+    bat
+    zellij
     gh
+    git
+    odin
+    zig
+    ghostty
+    kitty
+    fastfetch
+    zoxide
+    fishPlugins.done
+    fishPlugins.fzf-fish
+    fishPlugins.forgit
+    fishPlugins.hydro
+    fzf
+    fishPlugins.grc
+    grc
     gcc
-    (vscode-with-extensions.override {
-    vscodeExtensions = with vscode-extensions; [
-      bbenoist.nix
-      ms-python.python
-      ms-azuretools.vscode-docker
-      ms-vscode-remote.remote-ssh
-    ] ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [
-      {
-        name = "remote-ssh-edit";
-        publisher = "ms-vscode-remote";
-        version = "0.47.2";
-        sha256 = "1hp6gjh4xp2m1xlm1jsdzxw9d8frkiidhph6nvl24d0h8z34w49g";
-      }
-    ];
-  })
-    neofetch
-    godot_4
-    nvtop
-    htop
+    clangStdenv
+    gdb
+    lldb
+    ollama
+    bacon
+    nodejs_23
+    zls
+    ols
+    nil
+    omnisharp-roslyn
+    netcoredbg
+    #godot_4-mono
+    waybar
+    mako
+    rofi-wayland
   ];
-  
-  #system.autoUpgrade = {
- #enable = true;
-  #flake = inputs.self.outPath;
-  #flags = [
-   # "--update-input"
-    #"nixpkgs"
-   # "-L" # print build logs
-  #];
-  #dates = "02:00";
-  #randomizedDelaySec = "45min";
-#};
-  
+
+
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
@@ -173,11 +159,11 @@
   # List services that you want to enable:
 
   # Enable the OpenSSH daemon.
-  # services.openssh.enable = true;
+  services.openssh.enable = true;
 
   # Open ports in the firewall.
-  # networking.firewall.allowedTCPPorts = [ ... ];
-  # networking.firewall.allowedUDPPorts = [ ... ];
+  networking.firewall.allowedTCPPorts = [  ];
+  networking.firewall.allowedUDPPorts = [  ];
   # Or disable the firewall altogether.
   # networking.firewall.enable = false;
 
@@ -187,6 +173,6 @@
   # this value at the release version of the first install of this system.
   # Before changing this value read the documentation for this option
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
-  system.stateVersion = "23.11"; # Did you read the comment?
+  system.stateVersion = "24.11"; # Did you read the comment?
 
 }
